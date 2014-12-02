@@ -1,4 +1,4 @@
-module GutterballPlugin
+module ForemanGutterball
   module ApplicationHelper
   end
 end
