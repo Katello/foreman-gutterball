@@ -1,2 +1,2 @@
-GutterballPlugin::Engine.routes.draw do
+ForemanGutterball::Engine.routes.draw do
 end

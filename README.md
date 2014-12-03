@@ -1,4 +1,4 @@
-gutterball-plugin
+foreman-gutterball
 ========
 
-katello-plugin which adds gutterball suppport
+plugin which adds gutterball suppport to foreman and katello

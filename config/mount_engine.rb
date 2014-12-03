@@ -1,3 +1,3 @@
 Foreman::Application.routes.draw do
-  mount GutterballPlugin::Engine, :at => '/', :as => 'gutterball'
+  mount ForemanGutterball::Engine, :at => "/", :as => "foreman_gutterball"
 end
