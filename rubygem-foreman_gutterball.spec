@@ -17,6 +17,7 @@ License: GPLv3
 URL: http://katello.org
 Source0: %{gemname}-%{version}.gem
 
+Requires: gutterball
 Requires: %{?scl_prefix}rubygems
 Requires: %{?scl_prefix}ruby(release)
 BuildRequires: %{?scl_prefix}rubygems
