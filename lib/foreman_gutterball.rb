@@ -1,4 +1,4 @@
-require "foreman_gutterball/engine"
+require 'foreman_gutterball/engine'
 # require 'deface'
 
 module ForemanGutterball

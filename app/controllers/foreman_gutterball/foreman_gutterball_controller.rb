@@ -1,4 +1,4 @@
-require_dependency "foreman_gutterball/application_controller"
+require_dependency 'foreman_gutterball/application_controller'
 
 module ForemanGutterball
   # class GutterballController < Gutterball::ApplicationController
