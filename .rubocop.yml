@@ -64,12 +64,6 @@ Style/SingleLineBlockParams:
 Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
-
 Style/SymbolProc:
   Enabled: false # don't force usage of symbol procs
 
