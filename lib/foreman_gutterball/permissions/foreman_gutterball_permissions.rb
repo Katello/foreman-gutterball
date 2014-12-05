@@ -1,1 +1,1 @@
-require "foreman_gutterball/plugin.rb"
+require 'foreman_gutterball/plugin.rb'
