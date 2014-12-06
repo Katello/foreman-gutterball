@@ -6,7 +6,6 @@
 
 %global gemdir %(ruby -rubygems -e 'puts Gem::dir' 2>/dev/null)
 %global geminstdir %{gemdir}/gems/%{gemname}-%{version}
-%global rubyabi 1.8
 
 Summary: Gutterball plugin for Foreman and Katello
 Name: %{?scl_prefix}rubygem-%{gemname}
@@ -18,10 +17,26 @@ URL: http://katello.org
 Source0: %{gemname}-%{version}.gem
 
 Requires: gutterball
+%if "%{?scl}" == "ruby193"
+Requires: %{?scl_prefix}ruby-wrapper
+BuildRequires: %{?scl_prefix}ruby-wrapper
+%endif
+%if 0%{?fedora} > 18  || 0%{?rhel} > 6
+Requires: ruby(release) = 2.0.0
+BuildRequires: ruby(release) = 2.0.0
+BuildRequires: rubygems-devel
+%else
+%if "%{?scl}" == "ruby193"
+Requires: %{?scl_prefix}ruby(abi) = 1.9.1
+BuildRequires: %{?scl_prefix}ruby(abi) = 1.9.1
+BuildRequires:  %{?scl_prefix}rubygems-devel
+%else
+Requires: ruby(abi) = 1.8
+BuildRequires: ruby(abi) = 1.8
+%endif
+%endif
 Requires: %{?scl_prefix}rubygems
-Requires: %{?scl_prefix}ruby(release)
 BuildRequires: %{?scl_prefix}rubygems
-BuildRequires: %{?scl_prefix}ruby(release)
 BuildArch: noarch
 
 Provides: %{?scl_prefix}rubygem(%{gem_name}) = %{version}
@@ -58,7 +73,7 @@ cp -pa .%{gemdir}/* \
 
 %files
 %dir %{geminstdir}
-%{geminstdir}/lib
+%{geminstdir}/
 %exclude %{gemdir}/cache/%{gemname}-%{version}.gem
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
 
