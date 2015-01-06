@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
-  # new routes go here
+  scope :module => 'foreman_gutterball', :path => '/gutterball' do
+    resources :content_reports, :only => [:index, :show] do
+      member do
+        get :generate
+      end
+    end
+  end
 
 end
