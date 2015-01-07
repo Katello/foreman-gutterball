@@ -3,10 +3,10 @@ AllCops:
 #   Include:
 #     - app/views/**/*.rabl
 
-Metrics/LineLength:
+Style/LineLength:
   Max: 120
 
-Metrics/MethodLength:
+Style/MethodLength:
   Description: 'Avoid methods longer than 30 lines of code.'
   Max: 30
 
@@ -64,8 +64,10 @@ Style/SingleLineBlockParams:
 Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
 
-Style/SymbolProc:
-  Enabled: false # don't force usage of symbol procs
+# i guess this comes from a newer version of rubocop
+#
+# Style/SymbolProc:
+#   Enabled: false # don't force usage of symbol procs
 
 Style/WordArray:
   Enabled: false # don't force usage of %w()

@@ -1,5 +1,6 @@
 #!/usr/bin/env rake
 
+# rubocop:disable Style/AndOr
 require 'rubocop/rake_task' and RuboCop::RakeTask.new
 
 begin
