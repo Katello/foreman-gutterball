@@ -1,6 +1,4 @@
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
-
-require 'foreman_gutterball/version'
+require File.expand_path('../lib/foreman_gutterball/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'foreman_gutterball'
@@ -11,11 +9,12 @@ Gem::Specification.new do |s|
   s.summary     = 'Gutterball plugin for Foreman and Katello'
   s.description = 'Gutterball plugin for Foreman and Katello'
 
-  s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'README.md']
+  s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['test/**/*']
 
   s.add_dependency 'katello'
 
+  s.add_development_dependency 'rubocop', '0.24.1'
   s.add_development_dependency 'rubocop-checkstyle_formatter'
 
 end
