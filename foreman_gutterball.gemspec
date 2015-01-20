@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.summary     = 'Gutterball plugin for Foreman and Katello'
   s.description = 'Gutterball plugin for Foreman and Katello'
 
-  s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{app,config,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['test/**/*']
 
   s.add_dependency 'katello'
