@@ -1,62 +1,56 @@
 require 'rest_client'
 
 module ForemanGutterball
-  class GutterballService
+  class GutterballResource < ::Katello::HttpResource
+    cfg = SETTINGS.with_indifferent_access
+    url = cfg[:url]
+    self.prefix = 'gutterball/reports'
+    self.site = url.gsub(prefix, '')
+    self.consumer_secret = cfg[:oauth_consumer_secret]
+    self.consumer_key = cfg[:oauth_consumer_key]
+    self.ca_cert_file = cfg[:ca_cert_file]
+
     def self.logger
-      ::Logger.logger['gutterball_service']
+      ::Logging.logger['gutterball_service']
     end
 
-    # rubocop:disable Style/CyclomaticComplexity
-    def initialize(options = {})
-      cfg = SETTINGS['foreman_gutterball'].with_indifferent_access
-      url = cfg.url
-
-      def_headers = {
-        'accept' => 'application/json',
+    def self.default_headers
+      { 'accept' => 'application/json',
         'accept-language' => I18n.locale,
-        'content-type' => 'application/json'
-      }.merge(User.cp_oauth_headers)
+        'content-type' => 'application/json' }
+    end
+  end
 
-      @consumer_secret = options[:consumer_secret] || cfg.oauth_secret
-      @consumer_key = options[:consumer_key] || cfg.oauth_key
-      @ca_cert_file = options[:ca_cert_file] || cfg.ca_cert_file
-      @prefix = options[:prefix] || URI.parse(url).path
-      @site = options[:site] || url.gsub(@prefix, '')
-      @default_headers = options[:default_headers] || def_headers
-
-      logger.debug 'initializing GutterballService with options:'
-      logger.debug "    consumer_secret: #{@consumer_secret}"
-      logger.debug "    consumer_key:    #{@consumer_key}"
-      logger.debug "    ca_cert_file:    #{@ca_cert_file}"
-      logger.debug "    prefix:          #{@prefix}"
-      logger.debug "    site:            #{@site}"
-      logger.debug "    default_headers: #{@default_headers}"
+  class GutterballService < GutterballResource
+    # rubocop:disable Style/CyclomaticComplexity
+    def initialize(_options = {})
     end
 
     def available_reports
-      # "GET /reports"
-      get('', '', '')
+      get_reports(report_path, default_headers)
     end
 
-    # def valid_parameters(report_key)
-    def valid_parameters(*)
-      # "GET /reports/:report_key"
-      get('', '', '')
+    def consumer_status(params = nil)
+      get_reports(report_path('/consumer_status', params), default_headers)
     end
 
-    # def report(report_key, params = {})
-    def report(*)
-      # "GET /reports/:report_key/run?param1=v1&param2=v2[...]"
-      get('', '', '')
+    def consumer_trend(params = nil)
+      get_reports(report_path('/consumer_trend', params), default_headers)
+    end
+
+    def status_trend(params = nil)
+      get_reports(report_path('/status_trend', params), default_headers)
+    end
+
+    def report_path(report_key = nil, params = nil)
+      "#{prefix}#{report_key}#{params}"
     end
 
     private
 
-    attr_reader :consumer_secret, :consumer_key, :ca_cert_file, :prefix, :site, :default_headers
-
-    # def get(path, params, headers)
-    def get(*)
-      # restclient GET
+    def get_reports(path, headers = {})
+      client = GutterballResource.rest_client(Net::HTTP::Get, :get, path)
+      JSON.parse client.get(headers)
     end
   end
 end
