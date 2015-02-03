@@ -13,9 +13,6 @@ Style/MethodLength:
 Rails/ActionFilter:
   Enabled: false # Rails 4.0 check
 
-Rails/Delegate:
-  Enabled: false
-
 Rails/ScopeArgs:
   Enabled: false # don't force usage of lambdas for scopes
 
