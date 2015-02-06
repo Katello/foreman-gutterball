@@ -12,8 +12,15 @@ module ForemanGutterball
 
     initializer 'foreman_gutterball.register_plugin', :after => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_gutterball do
-        requires_foreman '>= 1.4'
+        requires_foreman '>= 1.7'
       end
+    end
+
+    initializer 'foreman_gutterball.apipie' do
+      Apipie.configuration.api_controllers_matcher << "#{ForemanGutterball::Engine.root}" \
+        '/app/controllers/foreman_gutterball/api/v2/*.rb'
+      Apipie.configuration.checksum_path += ['/foreman_gutterball/api/']
+      require 'foreman_gutterball/apipie/validators'
     end
 
     # Include concerns in this config.to_prepare block
