@@ -17,11 +17,8 @@ module ForemanGutterball
           params.permit(*accepted)
           report_params = params.slice(*accepted)
 
-          # gutterball wants a consumer
-          if report_params[:system_id]
-            report_params[:consumer_uuid] = report_params[:system_id]
-            report_params.delete(:system_id)
-          end
+          # gutterball wants a "consumer"
+          system_to_consumer(report_params)
 
           # gutterball wants an owner
           report_params[:owner] = @organization.label
@@ -31,23 +28,18 @@ module ForemanGutterball
         end
 
         api :GET, '/content_reports/system_trend', 'Generate a content host trend report'
-        param :system_id, :identifier, :desc => N_('content host uuid')
-        param :organization_id, :identifier, :desc => N_('organization id'), :required => true
+        param :system_id, :identifier, :desc => N_('Content host UUID')
+        param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
         param :start_date, Date, :desc => N_('Start date')
         param :end_date, Date, :desc => N_('End date')
-        # param :hours, String, :desc => N_('hours')
-        # TODO: find out wtf 'custom' is
-        # param :custom, String, :desc => N_('custom')
+        param :hours, Integer, :desc => N_('Show a trend between HOURS and now.')
         def system_trend
           accepted = [:system_id, :hours, :start_date, :end_date, :custom]
           params.permit(*accepted)
           report_params = params.slice(*accepted)
 
-          # gutterball wants a consumer
-          if report_params[:system_id]
-            report_params[:consumer_uuid] = report_params[:system_id]
-            report_params.delete(:system_id)
-          end
+          # gutterball wants a "consumer"
+          system_to_consumer(report_params)
 
           render :json => service.run_reports('consumer_trend', report_params)
         end
@@ -71,7 +63,7 @@ module ForemanGutterball
           params.permit(*accepted)
           report_params = params.slice(*accepted)
 
-          # gutterball wants an owner
+          # gutterball wants an "owner"
           report_params[:owner] = @organization.label
           report_params.delete(:organization_id)
 
@@ -82,6 +74,13 @@ module ForemanGutterball
 
         def service
           GutterballService.new
+        end
+
+        def system_to_consumer(report_params)
+          if report_params[:system_id]
+            report_params[:consumer_uuid] = report_params[:system_id]
+            report_params.delete(:system_id)
+          end
         end
       end
     end
