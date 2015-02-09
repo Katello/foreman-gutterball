@@ -89,9 +89,7 @@ module ForemanGutterball
         end
 
         def organization_to_owner(report_params)
-          # report_params[:owner] = @organization.label
-          #
-          report_params[:owner] = 'redhat' # temporarily to test against another server
+          report_params[:owner] = @organization.label
           report_params.delete(:organization_id)
         end
       end
