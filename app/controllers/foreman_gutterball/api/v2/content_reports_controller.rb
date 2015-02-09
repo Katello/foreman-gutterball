@@ -16,7 +16,7 @@ module ForemanGutterball
         def system_status
           accepted = [:system_id, :organization_id, :status, :on_date, :page, :per_page, :custom]
           params.permit(*accepted)
-          report_params = params.pluck(*accepted)
+          report_params = params.slice(*accepted)
 
           # gutterball wants a consumer
           if report_params[:system_id]
@@ -42,7 +42,7 @@ module ForemanGutterball
         def system_trend
           accepted = [:system_id, :hours, :start_date, :end_date, :custom]
           params.permit(*accepted)
-          report_params = params.pluck(*accepted)
+          report_params = params.slice(*accepted)
 
           # gutterball wants a consumer
           if report_params[:system_id]
@@ -70,7 +70,7 @@ module ForemanGutterball
                       :management_enabled,
                       :timezone]
           params.permit(*accepted)
-          report_params = params.pluck(*accepted)
+          report_params = params.slice(*accepted)
 
           # gutterball wants an owner
           report_params[:owner] = @organization.label

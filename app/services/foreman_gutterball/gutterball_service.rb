@@ -26,7 +26,7 @@ module ForemanGutterball
     end
 
     def run_reports(report_key, query_params = nil)
-      report_path = "#{prefix}reports/#{report_key}/run?#{query_params.to_query}"
+      report_path = "#{prefix}/reports/#{report_key}/run?#{query_params.to_query}"
       get_reports(report_path, default_headers)
     end
 
