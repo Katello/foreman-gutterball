@@ -4,15 +4,14 @@ module ForemanGutterball
       class ContentReportsController < ::Katello::Api::V2::ApiController
         before_filter :find_organization, :only => [:system_status, :system_trend, :status_trend]
 
-        api :GET, '/content_reports/system_status', 'Generate a content host status report'
-        param :system_id, :identifier, :desc => N_('content host uuid')
-        param :organization_id, :identifier, :desc => N_('organization id'), :required => true
-        param :status, String, :desc => N_("status: i'm guessing this is an enumeration of a couple statusi?")
-        param :on_date, Date, :desc => N_('Date to filter on.')
-        # param :page, String, :desc => N_('page yo')
-        # param :per_page, String, :desc => N_('per_page')
-        # TODO: find out wtf 'custom' is
-        # param :custom, String, :desc => N_('custom')
+        api :GET, '/content_reports/system_status', N_('Show the latest subscription status for a list of content ' \
+          'hosts that have reported their subscription status during a specified time period. Running this report ' \
+          'with minimal parameters will return all status records for all reported content hosts.')
+        param :system_id, :identifier, :desc => N_('Filters the results by the given content host UUID.')
+        param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
+        param :status, ['valid', 'invalid', 'partial'], :desc => N_('Filter results on content host status.')
+        param :on_date, Date, :desc => N_('Date to filter on. If not given, defaults to NOW. Results will be limited ' \
+          'to status records that where last reported before or on the given date.')
         def system_status
           accepted = [:system_id, :organization_id, :status, :on_date, :page, :per_page, :custom]
           params.permit(*accepted)
