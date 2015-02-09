@@ -20,19 +20,20 @@ module ForemanGutterball
           # gutterball wants a "consumer"
           system_to_consumer(report_params)
 
-          # gutterball wants an owner
-          report_params[:owner] = @organization.label
-          report_params.delete(:organization_id)
+          # gutterball wants an "owner"
+          organization_to_owner(report_params)
 
           render :json => service.run_reports('consumer_status', report_params)
         end
 
-        api :GET, '/content_reports/system_trend', 'Generate a content host trend report'
-        param :system_id, :identifier, :desc => N_('Content host UUID')
+        api :GET, '/content_reports/system_trend', N_('Show a listing of all subscription status snapshots from ' \
+          'content hosts which have reported their subscription status in the specified time period.')
+        param :system_id, :identifier, :desc => N_('Filters the results by the given content host UUID.')
         param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
-        param :start_date, Date, :desc => N_('Start date')
-        param :end_date, Date, :desc => N_('End date')
-        param :hours, Integer, :desc => N_('Show a trend between HOURS and now.')
+        param :start_date, Date, :desc => N_('Start date. Used in conjuction with end_date.')
+        param :end_date, Date, :desc => N_('End date. Used in conjection with start_date.')
+        param :hours, Integer,
+          :desc => N_('Show a trend between HOURS and now. Used independently of start_date/end_date.')
         def system_trend
           accepted = [:system_id, :hours, :start_date, :end_date, :custom]
           params.permit(*accepted)
@@ -41,13 +42,18 @@ module ForemanGutterball
           # gutterball wants a "consumer"
           system_to_consumer(report_params)
 
+          # gutterball wants an "owner"
+          organization_to_owner(report_params)
+
           render :json => service.run_reports('consumer_trend', report_params)
         end
 
-        api :GET, '/content_reports/status_trend', 'Generate a status trend report'
+        api :GET, '/content_reports/status_trend', N_('Show the per-day counts of content-hosts, grouped by ' \
+          'subscription status, optionally limited to a date range.')
         param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
         param :start_date, Date, :desc => N_('Start date')
         param :end_date, Date, :desc => N_('End date')
+        # TODO: enable the following params at some point
         # param :sku, String, :desc => N_('The entitlement SKU on which to filter'), :required => false
         # param :subscription_name, String, :desc => N_('The name of a subscription'), :required => false
         # param :management_enabled, String, :desc => N_('management_enabled')
@@ -64,8 +70,7 @@ module ForemanGutterball
           report_params = params.slice(*accepted)
 
           # gutterball wants an "owner"
-          report_params[:owner] = @organization.label
-          report_params.delete(:organization_id)
+          organization_to_owner(report_params)
 
           render :json => service.run_reports('status_trend', report_params)
         end
@@ -81,6 +86,13 @@ module ForemanGutterball
             report_params[:consumer_uuid] = report_params[:system_id]
             report_params.delete(:system_id)
           end
+        end
+
+        def organization_to_owner(report_params)
+          # report_params[:owner] = @organization.label
+          #
+          report_params[:owner] = 'redhat' # temporarily to test against another server
+          report_params.delete(:organization_id)
         end
       end
     end
