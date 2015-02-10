@@ -11,9 +11,9 @@ module ForemanGutterball
         param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
         param :status, ['valid', 'invalid', 'partial'], :desc => N_('Filter results on content host status.')
         param :on_date, Date, :desc => N_('Date to filter on. If not given, defaults to NOW. Results will be limited ' \
-          'to status records that where last reported before or on the given date.')
+          'to status records that were last reported before or on the given date.')
         def system_status
-          accepted = [:system_id, :organization_id, :status, :on_date, :page, :per_page, :custom]
+          accepted = [:system_id, :organization_id, :status, :on_date]
           params.permit(*accepted)
           report_params = params.slice(*accepted)
 
@@ -23,7 +23,9 @@ module ForemanGutterball
           # gutterball wants an "owner"
           organization_to_owner(report_params)
 
-          render :json => service.run_reports('consumer_status', report_params)
+          resp = service.run_reports('consumer_status', report_params)
+          resp = SystemStatusResponse.new(resp).entries
+          render :json => resp
         end
 
         api :GET, '/content_reports/system_trend', N_('Show a listing of all subscription status snapshots from ' \
@@ -35,7 +37,7 @@ module ForemanGutterball
         param :hours, Integer,
           :desc => N_('Show a trend between HOURS and now. Used independently of start_date/end_date.')
         def system_trend
-          accepted = [:system_id, :hours, :start_date, :end_date, :custom]
+          accepted = [:system_id, :hours, :start_date, :end_date]
           params.permit(*accepted)
           report_params = params.slice(*accepted)
 
@@ -61,11 +63,7 @@ module ForemanGutterball
         def status_trend
           accepted = [:organization_id,
                       :start_date,
-                      :end_date,
-                      :sku,
-                      :subscription_name,
-                      :management_enabled,
-                      :timezone]
+                      :end_date]
           params.permit(*accepted)
           report_params = params.slice(*accepted)
 
@@ -89,8 +87,46 @@ module ForemanGutterball
         end
 
         def organization_to_owner(report_params)
-          report_params[:owner] = @organization.label
+          # report_params[:owner] = @organization.label
+          #
+          report_params[:owner] = 'redhat' # temporarily to test against another server
           report_params.delete(:organization_id)
+        end
+
+        class SystemStatusResponse
+          attr_reader :entries
+          def initialize(data)
+            @entries = []
+            data.each do |dat|
+              dat['system'] = dat.delete('consumer')
+              dat['system']['system_state'] = dat['system'].delete('consumerState')
+              dat['system']['organization'] = dat['system'].delete('owner')
+              dat['system']['organization']['name'] = dat['system']['organization'].delete('displayName')
+              dat['system']['organization']['label'] = dat['system']['organization'].delete('key')
+              dat['system']['last_checkin'] = dat['system'].delete('lastCheckin')
+              @entries << dat
+            end
+          end
+        end
+
+        class SystemTrendResponse
+          def initialize(data)
+            # stuf
+          end
+
+          def response
+            # stuff
+          end
+        end
+
+        class StatusTrendResponse
+          def initialize(data)
+            # stuff
+          end
+
+          def response
+            # more stuff
+          end
         end
       end
     end

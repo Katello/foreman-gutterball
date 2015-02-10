@@ -20,20 +20,9 @@ module ForemanGutterball
       ::Logging.logger['gutterball_service']
     end
 
-    def report_details(report_key = nil)
-      report_path = "#{prefix}reports/#{report_key}"
-      get_reports(report_path, default_headers)
-    end
-
     def run_reports(report_key, query_params = nil)
-      report_path = "#{prefix}/reports/#{report_key}/run?#{query_params.to_query}"
-      get_reports(report_path, default_headers)
-    end
-
-    private
-
-    def get_reports(path, headers = {})
-      self.class.get(path, headers)
+      report_path = self.class.join_path(prefix, 'reports', report_key, 'run', self.class.hash_to_query(query_params))
+      JSON.parse(self.class.get(report_path, default_headers))
     end
   end
 end
