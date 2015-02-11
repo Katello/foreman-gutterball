@@ -23,13 +23,9 @@ module ForemanGutterball
       require 'foreman_gutterball/apipie/validators'
     end
 
-    # Include concerns in this config.to_prepare block
-    config.to_prepare do
-      begin
-        # TODO: remove rubocop disable once begin block has content
-      rescue => e # rubocop:disable Style/IndentationWidth
-        Rails.logger.warn "ForemanGutterball: skipping engine hook (#{e})"
-      end
+    initializer 'foreman_gutterball.register_actions', :before => 'foreman_tasks.initialize_dynflow' do
+      ForemanTasks.dynflow.require!
+      ForemanTasks.dynflow.config.eager_load_paths.concat(["#{ForemanGutterball::Engine.root}/app/lib/foreman_gutterball/actions"])
     end
 
     rake_tasks do

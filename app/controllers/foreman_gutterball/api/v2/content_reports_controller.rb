@@ -13,7 +13,7 @@ module ForemanGutterball
         param :on_date, Date, :desc => N_('Date to filter on. If not given, defaults to NOW. Results will be limited ' \
           'to status records that were last reported before or on the given date.')
         def system_status
-          render :json => service.report('consumer_status', param_filter(params))
+          zomg_reports!('consumer_status')
         end
 
         api :GET, '/content_reports/system_trend', N_('Show a listing of all subscription status snapshots from ' \
@@ -28,7 +28,7 @@ module ForemanGutterball
         param :hours, Integer,
           :desc => N_('Show a trend between HOURS and now. Used independently of start_date/end_date.')
         def system_trend
-          render :json => service.report('consumer_trend', param_filter(params))
+          zomg_reports!('consumer_trend')
         end
 
         api :GET, '/content_reports/status_trend', N_('Show the per-day counts of content-hosts, grouped by ' \
@@ -37,13 +37,14 @@ module ForemanGutterball
         param :start_date, Date, :desc => N_('Start date')
         param :end_date, Date, :desc => N_('End date')
         def status_trend
-          render :json => service.report('status_trend', param_filter(params))
+          zomg_reports!('status_trend')
         end
 
         private
 
-        def service
-          GutterballService.new
+        def zomg_reports!(report_type)
+          task = async_task(::Actions::ForemanGutterball::ContentReports::Report, report_type, param_filter(params))
+          respond_for_async :resource => task
         end
 
         def param_filter(params)
