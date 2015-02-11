@@ -9,6 +9,7 @@ module ForemanGutterball
 
         def validate(value)
           return false if value.nil?
+          return false unless value =~ /\A\d{4}(-\d{1,2}){2}\z/
           begin
             Date.parse(value) # make sure this is a valid date and not 2015-02-45, etc.
           rescue
