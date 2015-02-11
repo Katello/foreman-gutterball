@@ -2,46 +2,65 @@ module ForemanGutterball
   module Api
     module V2
       class ContentReportsController < ::Katello::Api::V2::ApiController
-        api :GET, '/content_reports', 'List available reports'
-        def index
-          render :json => service.report_details
+        before_filter :find_organization, :only => [:system_status, :system_trend, :status_trend]
+
+        api :GET, '/content_reports/system_status', N_('Show the latest subscription status for a list of content ' \
+          'hosts that have reported their subscription status during a specified time period. Running this report ' \
+          'with minimal parameters will return all status records for all reported content hosts.')
+        param :system_id, :identifier, :desc => N_('Filters the results by the given content host UUID.')
+        param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
+        param :status, ['valid', 'invalid', 'partial'], :desc => N_('Filter results on content host status.')
+        param :on_date, Date, :desc => N_('Date to filter on. If not given, defaults to NOW. Results will be limited ' \
+          'to status records that were last reported before or on the given date.')
+        def system_status
+          zomg_reports!('consumer_status')
         end
 
-        api :GET, '/content_reports/:id', 'Report details'
-        def show
-          report = service.report_details params[:id]
-          render :json => report
+        api :GET, '/content_reports/system_trend', N_('Show a listing of all subscription status snapshots from ' \
+          'content hosts which have reported their subscription status in the specified time period.')
+        param :system_id,
+          :identifier,
+          :desc => N_('Filters the results by the given content host UUID.'),
+          :required => true
+        param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
+        param :start_date, Date, :desc => N_('Start date. Used in conjuction with end_date.')
+        param :end_date, Date, :desc => N_('End date. Used in conjection with start_date.')
+        param :hours, Integer,
+          :desc => N_('Show a trend between HOURS and now. Used independently of start_date/end_date.')
+        def system_trend
+          zomg_reports!('consumer_trend')
         end
 
-        api :GET, '/content_reports/:id/run', 'Generate reports'
-        def run
-          query_params = request.query_parameters.symbolize_keys
-          validate_params(query_params.keys) unless query_params.empty?
-          report = service.run_reports(params[:id], query_params)
-          render :json => report
+        api :GET, '/content_reports/status_trend', N_('Show the per-day counts of content-hosts, grouped by ' \
+          'subscription status, optionally limited to a date range.')
+        param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
+        param :start_date, Date, :desc => N_('Start date')
+        param :end_date, Date, :desc => N_('End date')
+        def status_trend
+          zomg_reports!('status_trend')
         end
 
         private
 
-        def consumer_status
-          [:consumer_uuid, :owner, :status, :on_date, :page, :per_page, :custom]
+        def zomg_reports!(report_type)
+          task = async_task(::Actions::ForemanGutterball::ContentReports::Report, report_type, param_filter(params))
+          respond_for_async :resource => task
         end
 
-        def consumer_trend
-          [:consumer_uuid, :hours, :start_date, :end_date, :custom]
+        def param_filter(params)
+          send("#{params[:action]}_filter", params)
         end
 
-        def status_trend
-          [:start_date, :end_date, :owner, :sku, :subscription_name, :management_enabled, :timezone]
+        def system_status_filter(params)
+          params.permit(*%w(system_id organization_id status on_date))
         end
 
-        def service
-          GutterballService.new
+        def system_trend_filter(params)
+          params.permit(*%w(system_id organization_id hours start_date end_date))
         end
 
-        def validate_params(query_keys)
-          report_keys = send(params[:id])
-          fail Katello::HttpErrors::BadRequest, _('Invalid parameters') unless report_keys & query_keys == query_keys
+        def status_trend_filter(params)
+          params.permit(*%w(organization_id start_date end_date))
         end
       end
     end

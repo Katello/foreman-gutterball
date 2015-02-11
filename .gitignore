@@ -33,4 +33,8 @@ Gemfile.lock
 *.bowerrc
 bower.json
 
+# rpm build artifacts
 SRPMs
+
+# config stuff
+config/foreman_gutterball.yaml

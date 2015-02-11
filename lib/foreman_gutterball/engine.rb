@@ -12,17 +12,20 @@ module ForemanGutterball
 
     initializer 'foreman_gutterball.register_plugin', :after => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_gutterball do
-        requires_foreman '>= 1.4'
+        requires_foreman '>= 1.7'
       end
     end
 
-    # Include concerns in this config.to_prepare block
-    config.to_prepare do
-      begin
-        # TODO: remove rubocop disable once begin block has content
-      rescue => e # rubocop:disable Style/IndentationWidth
-        Rails.logger.warn "ForemanGutterball: skipping engine hook (#{e})"
-      end
+    initializer 'foreman_gutterball.apipie' do
+      Apipie.configuration.api_controllers_matcher << "#{ForemanGutterball::Engine.root}" \
+        '/app/controllers/foreman_gutterball/api/v2/*.rb'
+      Apipie.configuration.checksum_path += ['/foreman_gutterball/api/']
+      require 'foreman_gutterball/apipie/validators'
+    end
+
+    initializer 'foreman_gutterball.register_actions', :before => 'foreman_tasks.initialize_dynflow' do
+      ForemanTasks.dynflow.require!
+      ForemanTasks.dynflow.config.eager_load_paths.concat(["#{ForemanGutterball::Engine.root}/app/lib/foreman_gutterball/actions"])
     end
 
     rake_tasks do
