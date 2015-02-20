@@ -1,11 +1,17 @@
 Rails.application.routes.draw do
   scope :module => 'foreman_gutterball', :path => '/katello' do
-    scope :module => 'api' do
-      scope :module =>  'v2' do
-        resources :content_reports,
-          :only => [:index, :show],
-          :constraints => { :id => /(status_trend|consumer_trend|consumer_status)/i } do
-          get :run, :on => :member
+    namespace :api do
+      scope '(:api_version)',
+        :module => :v2,
+        :defaults => { :api_version => 'v2' },
+        :api_version => /v2/,
+        :constraints => ApiConstraints.new(:version => 2, :default => true) do
+        resources :content_reports, :only => [] do
+          collection do
+            get :system_status
+            get :system_trend
+            get :status_trend
+          end
         end
       end
     end

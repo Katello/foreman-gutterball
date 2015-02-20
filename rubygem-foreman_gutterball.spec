@@ -74,7 +74,6 @@ gem install --local --install-dir .%{gem_dir} --force %{SOURCE0} --no-rdoc --no-
 %foreman_bundlerd_file
 
 %{__install} --directory %{buildroot}%{foreman_dir}/plugins
-%{__install} .%{gem_instdir}/config/%{gem_name}.yaml %{buildroot}%{foreman_dir}/plugins/
 
 %clean
 %{__rm} --recursive --force %{buildroot} .%{gem_dir}
@@ -91,7 +90,6 @@ gem install --local --install-dir .%{gem_dir} --force %{SOURCE0} --no-rdoc --no-
 %{gem_spec}
 %{gem_cache}
 %{foreman_bundlerd_plugin}
-%config(noreplace) %{foreman_dir}/plugins/%{gem_name}.yaml
 
 %changelog
 * Wed Dec 03 2014 Adam Price <komidore64@gmail.com> - 0.0.1-1

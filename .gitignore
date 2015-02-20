@@ -11,6 +11,7 @@ capybara-*.html
 rerun.txt
 pickle-email-*.html
 pkg
+.*.sw?
 
 # TODO Comment out these rules if you are OK with secrets being uploaded to the repo
 config/initializers/secret_token.rb
@@ -33,4 +34,8 @@ Gemfile.lock
 *.bowerrc
 bower.json
 
+# rpm build artifacts
 SRPMs
+
+# config stuff
+config/foreman_gutterball.yaml
