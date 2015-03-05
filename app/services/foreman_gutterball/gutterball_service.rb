@@ -67,7 +67,7 @@ module ForemanGutterball
 
     def format_consumer_trend_response(response)
       response.map do |member|
-        { :date => iso8601_to_yyyy_mm_dd(member['status']['date']),
+        { :date => iso8601_to_yyyy_mm_dd_hms(member['status']['date']),
           :status => member['status']['status'] }
       end
     end
@@ -82,6 +82,10 @@ module ForemanGutterball
 
     def iso8601_to_yyyy_mm_dd(datetime)
       DateTime.iso8601(datetime).strftime('%Y-%m-%d')
+    end
+
+    def iso8601_to_yyyy_mm_dd_hms(datetime)
+      DateTime.iso8601(datetime).strftime('%Y-%m-%d %H:%M:%S')
     end
   end
 end
