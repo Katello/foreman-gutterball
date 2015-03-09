@@ -53,6 +53,10 @@ module ForemanGutterball
         params[:consumer_uuid] = params.delete(:system_id)
       end
 
+      if params[:management]
+        params[:management_enabled] = params.delete(:management)
+      end
+
       params[:owner] = Organization.find(params[:organization_id]).label
       params.delete(:organization_id)
     end
@@ -60,6 +64,7 @@ module ForemanGutterball
     def format_consumer_status_response(response)
       response.map do |member|
         { :name => member['consumer']['name'],
+          :uuid => member['consumer']['uuid'],
           :status => member['status']['status'],
           :date => iso8601_to_yyyy_mm_dd(member['status']['date']) }
       end

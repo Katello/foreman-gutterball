@@ -41,6 +41,9 @@ module ForemanGutterball
               'Must be a date in the form of YYYY-MM-DD.')
         param :end_date, Date, :desc => N_('End date. Used in conjunction with start_date. ' \
               'Must be a date in the form of YYYY-MM-DD.')
+        param :management, [true, false], :desc => N_('Filter on the Management field. If set to \'true\', only ' \
+              'content-hosts with management enabled will be returned. If set to \'false\', only content-hosts with ' \
+              'management not enabled will be returned.')
         def status_trend
           zomg_reports!('status_trend')
         end
@@ -65,7 +68,7 @@ module ForemanGutterball
         end
 
         def status_trend_filter(params)
-          params.permit(*%w(organization_id start_date end_date))
+          params.permit(*%w(organization_id start_date end_date management))
         end
       end
     end
