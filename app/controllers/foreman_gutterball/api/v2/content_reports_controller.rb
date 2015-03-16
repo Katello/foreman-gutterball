@@ -13,6 +13,9 @@ module ForemanGutterball
         param :on_date, Date, :desc => N_('Date to filter on. If not given, defaults to NOW. Results will be limited ' \
           'to status records that were last reported before or on the given date. ' \
           'Must be a date in the form of YYYY-MM-DD.')
+        param :management, [true, false], :desc => N_('Filter on the Management field. If set to \'true\', only ' \
+              'content-hosts with management enabled will be returned. If set to \'false\', only content-hosts with ' \
+              'management not enabled will be returned.')
         def system_status
           zomg_reports!('consumer_status')
         end
@@ -41,6 +44,9 @@ module ForemanGutterball
               'Must be a date in the form of YYYY-MM-DD.')
         param :end_date, Date, :desc => N_('End date. Used in conjunction with start_date. ' \
               'Must be a date in the form of YYYY-MM-DD.')
+        param :management, [true, false], :desc => N_('Filter on the Management field. If set to \'true\', only ' \
+              'content-hosts with management enabled will be returned. If set to \'false\', only content-hosts with ' \
+              'management not enabled will be returned.')
         def status_trend
           zomg_reports!('status_trend')
         end
@@ -57,7 +63,7 @@ module ForemanGutterball
         end
 
         def system_status_filter(params)
-          params.permit(*%w(system_id organization_id status on_date))
+          params.permit(*%w(system_id organization_id status on_date management))
         end
 
         def system_trend_filter(params)
@@ -65,7 +71,7 @@ module ForemanGutterball
         end
 
         def status_trend_filter(params)
-          params.permit(*%w(organization_id start_date end_date))
+          params.permit(*%w(organization_id start_date end_date management))
         end
       end
     end
