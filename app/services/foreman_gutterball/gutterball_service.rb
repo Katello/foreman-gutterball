@@ -40,8 +40,8 @@ module ForemanGutterball
 
     def report(report_key, query_params)
       format_query(query_params)
-      path = self.class.join_path(prefix, 'reports', report_key, 'run', hash_to_query(query_params))
-      raw = self.class.get(path, default_headers)
+      path = self.class.join_path(prefix, 'reports', report_key, 'run')
+      raw = get_with_params(path, default_headers, hash_to_query(query_params))
       resp = JSON.parse(raw)
       send("format_#{report_key}_response", resp)
     end
@@ -52,7 +52,18 @@ module ForemanGutterball
       if params[:system_id]
         params[:consumer_uuid] = params.delete(:system_id)
       end
-
+      if params[:start_date]
+        date_string = params[:start_date]
+        date_string += ' 00:00:00' if date_string.length < 11 # beginning of day
+        params[:start_date] = DateTime.parse(date_string).strftime('%Y-%m-%dT%H:%M:%S.%L%z')
+      end
+      %w(end_date on_date).each do |key|
+        if params[key]
+          date_string = params[key]
+          date_string += ' 24:00:00' if date_string.length < 11 # end of day
+          params[key] = DateTime.parse(date_string).strftime('%Y-%m-%dT%H:%M:%S.%L%z')
+        end
+      end
       params[:owner] = Organization.find(params[:organization_id]).label
       params.delete(:organization_id)
     end
@@ -86,6 +97,19 @@ module ForemanGutterball
 
     def iso8601_to_yyyy_mm_dd_hms(datetime)
       DateTime.iso8601(datetime).strftime('%Y-%m-%d %H:%M:%S')
+    end
+
+    def get_with_params(a_path, headers = {}, params = '')
+      self.class.logger.debug "Resource GET request: #{a_path}"
+      self.class.print_debug_info(a_path, headers)
+      a_path = URI.encode(a_path)
+      client = self.class.rest_client(Net::HTTP::Get, :get, a_path  + params)
+      self.class.process_response(client.get(headers))
+    rescue RestClient::Exception => e
+      self.class.raise_rest_client_exception e, a_path, 'GET'
+    rescue Errno::ECONNREFUSED
+      service = a_path.split('/').second
+      raise Errors::ConnectionRefusedException, _('A backend service [ %s ] is unreachable') % service.capitalize
     end
   end
 end

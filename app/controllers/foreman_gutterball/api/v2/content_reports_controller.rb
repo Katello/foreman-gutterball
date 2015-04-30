@@ -12,7 +12,7 @@ module ForemanGutterball
         param :status, ['valid', 'invalid', 'partial'], :desc => N_('Filter results on content host status.')
         param :on_date, Date, :desc => N_('Date to filter on. If not given, defaults to NOW. Results will be limited ' \
           'to status records that were last reported before or on the given date. ' \
-          'Must be a date in the form of YYYY-MM-DD.')
+          'Must be a date in the form of "YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS".')
         def system_status
           zomg_reports!('consumer_status')
         end
@@ -25,9 +25,9 @@ module ForemanGutterball
           :required => true
         param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
         param :start_date, Date, :desc => N_('Start date. Used in conjunction with end_date. ' \
-              'Must be a date in the form of YYYY-MM-DD.')
+              'Must be a date in the form of "YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS".')
         param :end_date, Date, :desc => N_('End date. Used in conjunction with start_date. ' \
-              'Must be a date in the form of YYYY-MM-DD.')
+              'Must be a date in the form of "YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS".')
         param :hours, Integer,
           :desc => N_('Show a trend between HOURS and now. Used independently of start_date/end_date.')
         def system_trend
@@ -38,9 +38,9 @@ module ForemanGutterball
           'subscription status, optionally limited to a date range.')
         param :organization_id, :identifier, :desc => N_('Organization ID'), :required => true
         param :start_date, Date, :desc => N_('Start date. Used in conjunction with end_date. ' \
-              'Must be a date in the form of YYYY-MM-DD.')
+              'Must be a date in the form of "YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS".')
         param :end_date, Date, :desc => N_('End date. Used in conjunction with start_date. ' \
-              'Must be a date in the form of YYYY-MM-DD.')
+              'Must be a date in the form of "YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS".')
         def status_trend
           zomg_reports!('status_trend')
         end
