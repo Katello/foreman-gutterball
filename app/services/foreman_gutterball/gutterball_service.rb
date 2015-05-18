@@ -49,9 +49,7 @@ module ForemanGutterball
     private
 
     def format_query(params)
-      if params[:system_id]
-        params[:consumer_uuid] = params.delete(:system_id)
-      end
+      params[:consumer_uuid] = params.delete(:system_id) if params[:system_id]
       if params[:start_date]
         date_string = params[:start_date]
         date_string += ' 00:00:00' if date_string.length < 11 # beginning of day
@@ -65,6 +63,7 @@ module ForemanGutterball
         end
       end
       params[:owner] = Organization.find(params[:organization_id]).label
+      params[:sku] = params.delete(:subscription_sku) if params[:subscription_sku]
       params.delete(:organization_id)
     end
 
