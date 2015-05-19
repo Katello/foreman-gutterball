@@ -13,6 +13,8 @@ module ForemanGutterball
         param :on_date, Date, :desc => N_('Date to filter on. If not given, defaults to NOW. Results will be limited ' \
           'to status records that were last reported before or on the given date. ' \
           'Must be a date in the form of "YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS".')
+        param :management_enabled, :bool, :desc => N_('Include only content-hosts with the ' \
+              'management enabled attribute true or false')
         def system_status
           zomg_reports!('consumer_status')
         end
@@ -63,7 +65,7 @@ module ForemanGutterball
         end
 
         def system_status_filter(params)
-          params.permit(*%w(system_id organization_id status on_date))
+          params.permit(*%w(system_id organization_id status on_date management_enabled))
         end
 
         def system_trend_filter(params)
