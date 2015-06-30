@@ -7,7 +7,9 @@ module ForemanGutterball
 
     # Add any db migrations
     initializer 'foreman_gutterball.load_app_instance_data' do |app|
-      app.config.paths['db/migrate'] += ForemanGutterball::Engine.paths['db/migrate'].existent
+      ForemanGutterball::Engine.paths['db/migrate'].existent.each do |path|
+        app.config.paths['db/migrate'] << path
+      end
     end
 
     initializer 'foreman_gutterball.register_plugin', :after => :finisher_hook do |_app|
