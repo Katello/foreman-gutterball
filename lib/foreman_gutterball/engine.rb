@@ -13,6 +13,11 @@ module ForemanGutterball
     initializer 'foreman_gutterball.register_plugin', :after => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_gutterball do
         requires_foreman '>= 1.7'
+
+        security_block :content_reports do
+          permission :view_content_reports,
+            'foreman_gutterball/api/v2/content_reports' => [:system_status, :system_trend, :status_trend]
+        end
       end
     end
 
