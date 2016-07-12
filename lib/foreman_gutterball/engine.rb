@@ -12,7 +12,7 @@ module ForemanGutterball
       end
     end
 
-    initializer 'foreman_gutterball.register_plugin', :after => :finisher_hook do |_app|
+    initializer 'foreman_gutterball.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_gutterball do
         requires_foreman '>= 1.7'
 
